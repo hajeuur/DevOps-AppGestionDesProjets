@@ -12,6 +12,13 @@ pipeline {
         pollSCM('H/2 * * * *')    // secours : verifie GitHub toutes les 2 minutes
     }
 
+    environment {
+        // MySQL de test sur le port 3307 (le 3306 est deja pris sous Windows)
+        SPRING_DATASOURCE_URL      = 'jdbc:mysql://localhost:3307/test_db?createDatabaseIfNotExist=true'
+        SPRING_DATASOURCE_USERNAME = 'root'
+        SPRING_DATASOURCE_PASSWORD = 'root'
+    }
+
     options {
         timestamps()
         buildDiscarder(logRotator(numToKeepStr: '10'))
@@ -38,7 +45,7 @@ pipeline {
                         docker run -d --name mysql-ci \
                             -e MYSQL_ROOT_PASSWORD=root \
                             -e MYSQL_DATABASE=test_db \
-                            -p 3306:3306 mysql:8.0
+                            -p 3307:3306 mysql:8.0
                     fi
                     echo "Attente de MySQL..."
                     for i in $(seq 1 40); do
